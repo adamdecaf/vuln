@@ -48,7 +48,7 @@ func Binary(ctx context.Context, exe io.ReaderAt, cfg *Config) (_ *Result, err e
 		fmt.Printf("warning: failed to extract build system specification GOOS: %s GOARCH: %s\n", goos, goarch)
 	}
 
-	modVulns = modVulns.filter(goos, goarch)
+	modVulns = modVulns.filter(goos, goarch, cfg.StabilityDelay)
 	result := &Result{}
 	for pkg, symbols := range packageSymbols {
 		mod := findPackageModule(pkg, cmods)

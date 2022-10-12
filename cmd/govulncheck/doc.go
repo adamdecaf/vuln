@@ -65,6 +65,8 @@ The -json flag causes govulncheck to print its output as a JSON object
 corresponding to the type [golang.org/x/vuln/vulncheck.Result]. The exit code
 of govulncheck is 0 when this flag is provided.
 
+The -stability-delay flag removes newly published vulnerabilities from results.
+
 The -tags flag accepts a comma-separated list of build tags to control which
 files should be included in loaded packages for source analysis.
 

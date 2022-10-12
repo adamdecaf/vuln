@@ -10,6 +10,7 @@ import (
 	"go/token"
 	"go/types"
 	"strings"
+	"time"
 
 	"golang.org/x/exp/slices"
 	"golang.org/x/tools/go/packages"
@@ -25,6 +26,9 @@ type Config struct {
 
 	// Client is used for querying data from a vulnerability database.
 	Client client.Client
+
+	// StabilityDelay ignores newly published vulnerabilities
+	StabilityDelay time.Duration
 
 	// SourceGoVersion is Go version used to build Source inputs passed
 	// to vulncheck. If not provided, the current Go version at PATH
@@ -309,7 +313,7 @@ type modVulns struct {
 	vulns []*osv.Entry
 }
 
-func (mv moduleVulnerabilities) filter(os, arch string) moduleVulnerabilities {
+func (mv moduleVulnerabilities) filter(os, arch string, stabilityDelay time.Duration) moduleVulnerabilities {
 	var filteredMod moduleVulnerabilities
 	for _, mod := range mv {
 		module := mod.mod
@@ -317,9 +321,15 @@ func (mv moduleVulnerabilities) filter(os, arch string) moduleVulnerabilities {
 		if module.Replace != nil {
 			modVersion = module.Replace.Version
 		}
+		now := time.Now()
 		// TODO(https://golang.org/issues/49264): if modVersion == "", try vcs?
 		var filteredVulns []*osv.Entry
 		for _, v := range mod.vulns {
+			// Ignore vulnerabilities that are too new for the configured delay.
+			// This allows teams to update prior to seeing failures.
+			if !v.Published.Add(stabilityDelay).Before(now) {
+				continue
+			}
 			var filteredAffected []osv.Affected
 			for _, a := range v.Affected {
 				// Vulnerabilities from some databases might contain

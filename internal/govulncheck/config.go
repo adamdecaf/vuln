@@ -4,7 +4,11 @@
 
 package govulncheck
 
-import "golang.org/x/tools/go/packages"
+import (
+	"time"
+
+	"golang.org/x/tools/go/packages"
+)
 
 const (
 	// AnalysisTypeBinary is used for binary analysis with vulncheck.Binary.
@@ -51,6 +55,9 @@ type Config struct {
 
 	// SourceLoadConfig specifies the package loading configuration.
 	SourceLoadConfig *packages.Config
+
+	// StabilityDelay ignores newly published vulnerabilities
+	StabilityDelay time.Duration
 
 	// GoVersion specifies the go version used when analyzing source code.
 	// The default is the version of the go command found from the PATH (Path).

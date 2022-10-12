@@ -32,7 +32,11 @@ func Run(ctx context.Context, cfg Config) (*Result, error) {
 	if err != nil {
 		return nil, err
 	}
-	vcfg := &vulncheck.Config{Client: dbClient, SourceGoVersion: cfg.GoVersion}
+	vcfg := &vulncheck.Config{
+		Client:          dbClient,
+		SourceGoVersion: cfg.GoVersion,
+		StabilityDelay:  cfg.StabilityDelay,
+	}
 
 	format := cfg.OutputType
 	if format == OutputTypeText || format == OutputTypeVerbose {

@@ -12,6 +12,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"time"
 
 	"golang.org/x/tools/go/buildutil"
 	"golang.org/x/tools/go/packages"
@@ -23,6 +24,8 @@ var (
 	verboseFlag = flag.Bool("v", false, "print a full call stack for each vulnerability")
 	testFlag    = flag.Bool("test", false, "analyze test files. Only valid for source code.")
 	tagsFlag    buildutil.TagsFlag
+
+	stabilityDelay = flag.Duration("stability-delay", 0*time.Second, "Duration to ignore new vulnerabilities")
 
 	// testmode flags. See main_testmode.go.
 	dirFlag         string
@@ -77,9 +80,10 @@ For details, see https://pkg.go.dev/golang.org/x/vuln/cmd/govulncheck.
 
 	ctx := context.Background()
 	_, err := govulncheck.Run(ctx, govulncheck.Config{
-		AnalysisType: mode,
-		OutputType:   outputType,
-		Patterns:     patterns,
+		AnalysisType:   mode,
+		OutputType:     outputType,
+		Patterns:       patterns,
+		StabilityDelay: *stabilityDelay,
 		SourceLoadConfig: &packages.Config{
 			Dir:        filepath.FromSlash(dirFlag),
 			Tests:      *testFlag,

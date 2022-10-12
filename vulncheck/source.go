@@ -59,7 +59,7 @@ func Source(ctx context.Context, pkgs []*Package, cfg *Config) (_ *Result, err e
 	if err != nil {
 		return nil, err
 	}
-	modVulns = modVulns.filter(cfg.GOOS, cfg.GOARCH)
+	modVulns = modVulns.filter(cfg.GOOS, cfg.GOARCH, cfg.StabilityDelay)
 	result := &Result{
 		Imports:  &ImportGraph{Packages: make(map[int]*PkgNode)},
 		Requires: &RequireGraph{Modules: make(map[int]*ModNode)},

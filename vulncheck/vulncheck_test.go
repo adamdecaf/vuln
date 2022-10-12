@@ -8,6 +8,7 @@ import (
 	"path"
 	"reflect"
 	"testing"
+	"time"
 
 	"github.com/google/go-cmp/cmp"
 	"golang.org/x/tools/go/packages/packagestest"
@@ -165,7 +166,8 @@ func TestFilterVulns(t *testing.T) {
 		},
 	}
 
-	filtered := mv.filter("linux", "amd64")
+	stabilityDelay := 0 * time.Second
+	filtered := mv.filter("linux", "amd64", stabilityDelay)
 	if diff := diffModuleVulnerabilities(expected, filtered); diff != "" {
 		t.Fatalf("Filter returned unexpected results (-want,+got):\n%s", diff)
 	}
